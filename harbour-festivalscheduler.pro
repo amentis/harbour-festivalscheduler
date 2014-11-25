@@ -19,15 +19,8 @@ SOURCES += src/harbour-festivalscheduler.cpp
 OTHER_FILES += qml/harbour-festivalscheduler.qml \
     qml/cover/CoverPage.qml \
     qml/pages/FirstPage.qml \
-    qml/pages/SecondPage.qml \
     rpm/harbour-festivalscheduler.changes.in \
     rpm/harbour-festivalscheduler.spec \
     rpm/harbour-festivalscheduler.yaml \
-    translations/*.ts \
     harbour-festivalscheduler.desktop
-
-# to disable building translations every time, comment out the
-# following CONFIG line
-CONFIG += sailfishapp_i18n
-TRANSLATIONS += translations/harbour-festivalscheduler-de.ts
 
