@@ -14,13 +14,24 @@ TARGET = harbour-festivalscheduler
 
 CONFIG += sailfishapp
 
-SOURCES += src/harbour-festivalscheduler.cpp
+SOURCES += src/harbour-festivalscheduler.cpp \
+    src/festivallistitem.cpp \
+    src/bandlistitem.cpp \
+    src/dbconnect.cpp
 
 OTHER_FILES += qml/harbour-festivalscheduler.qml \
     qml/cover/CoverPage.qml \
-    qml/pages/FirstPage.qml \
     rpm/harbour-festivalscheduler.changes.in \
     rpm/harbour-festivalscheduler.spec \
     rpm/harbour-festivalscheduler.yaml \
-    harbour-festivalscheduler.desktop
+    harbour-festivalscheduler.desktop \
+    qml/pages/Home.qml \
+    qml/pages/SelectFest.qml \
+    qml/pages/EditFest.qml
 
+HEADERS += \
+    src/festivallistitem.h \
+    src/bandlistitem.h \
+    src/dbconnect.h
+
+QT += sql

@@ -32,20 +32,31 @@
 #include <QtQuick>
 #endif
 
-#include <sailfishapp.h>
+#include <QGuiApplication>
 
+#include <sailfishapp.h>
+#include "bandlistitem.h"
+#include "festivallistitem.h"
+#include "dbconnect.h"
 
 int main(int argc, char *argv[])
 {
-    // SailfishApp::main() will display "qml/template.qml", if you need more
-    // control over initialization, you can use:
-    //
-    //   - SailfishApp::application(int, char *[]) to get the QGuiApplication *
-    //   - SailfishApp::createView() to get a new QQuickView * instance
-    //   - SailfishApp::pathTo(QString) to get a QUrl to a resource file
-    //
-    // To display the view, call "show()" (will show fullscreen on device).
+    QGuiApplication* application = SailfishApp::application(argc,argv);
+    QQuickView* view = SailfishApp::createView();
 
-    return SailfishApp::main(argc, argv);
+    qmlRegisterType<BandListItem>("com.ivanbratoev.festivalsheduler", 1, 0, "BandListItem");
+    qmlRegisterType<FestivalListItem>("com.ivanbratoev.festivalsheduler", 1, 0, "FestivalListItem");
+
+    DbConnect* dbConnect = new DbConnect(this);
+
+    QObject::connect(application, SIGNAL(aboutToQuit()), dbConnect, SLOT(deleteLater()));
+
+    view->rootContext()->setContextProperty("dbConnect", dbConnect);
+
+    view->setSource(SailfishApp::pathTo("qml/harbour-festivalscheduler.qml"));
+
+    view->showFullScreen();
+
+    return application->exec();
 }
 

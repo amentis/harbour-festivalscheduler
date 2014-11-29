@@ -34,7 +34,14 @@ import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component { FirstPage { } }
+    function getInitialPage() {
+        if (dbConnect.empty){
+            return SelectFest
+        } else {
+            return Home
+        }
+    }
+    initialPage: getInitialPage()
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 }
 
