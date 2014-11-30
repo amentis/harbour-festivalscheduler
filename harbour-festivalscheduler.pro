@@ -27,7 +27,9 @@ OTHER_FILES += qml/harbour-festivalscheduler.qml \
     harbour-festivalscheduler.desktop \
     qml/pages/Home.qml \
     qml/pages/SelectFest.qml \
-    qml/pages/EditFest.qml
+    qml/pages/EditFest.qml \
+    qml/pages/AddFest.qml \
+    qml/pages/AddBand.qml
 
 HEADERS += \
     src/festivallistitem.h \

@@ -34,19 +34,36 @@ import com.ivanbratoev.festivalsheduler 1.0
 
 Page {
     id: homePage
-    SilicaFlickable{
+    PageHeader {
+        title: dbConnect.getFest(dbConnect.currentFest).name
+    }
+    SilicaFlickable {
         id: flickable
-        PullDownMenu{
+        anchors.fill: parent
+        PullDownMenu {
             id: pullDownMenu
 
-            MenuItem{
+            MenuItem {
                 text: "Select Other Festival"
                 onClicked: pageStack.push("SelectFest.qml")
             }
 
-            MenuItem{
+            MenuItem {
                 text: "Edit Festival"
                 onClicked: pageStack.push("EditFest.qml")
+            }
+        }
+
+        SilicaListView {
+            id: festList
+            anchors.top: parent.top
+            anchors.fill: parent
+            model: dbConnect.listBands
+            VerticalScrollDecorator {}
+            delegate: ListItem {
+                width: festList.width
+                height: Theme.itemSizeMedium
+                Label { text: name }
             }
         }
     }
