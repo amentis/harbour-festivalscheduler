@@ -26,44 +26,47 @@ BandListItem::~BandListItem(){
 	delete _name;
 }
 
-QString* BandListItem::uid() {
-	return _uid;
+QString BandListItem::uid() {
+	return *_uid;
 }
 
-void BandListItem::setuid(QString* uid) {
+void BandListItem::setuid(QString uid) {
 	if (uid != _uid){
-		_uid = uid;
+		_uid = &uid;
 		emit uidChanged();
 	}
 }
 
-QString* BandListItem::fest() {
-	return _fest;
+QString BandListItem::fest() {
+	return *_fest;
 
 }
 
-void BandListItem::setfest(QString* fest) {
+void BandListItem::setfest(QString fest) {
 	if (fest != _fest){
-		_fest = fest;
+		_fest = &fest;
 		emit festChanged();
 	}
 }
 
-QString* BandListItem::name() {
-	return _name;
+QString BandListItem::name() {
+	return *_name;
 }
 
-void BandListItem::setname(QString* name) {
-	_name = name;
+void BandListItem::setname(QString name) {
+	if (name != _name){
+		_name = &name;
+		emit nameChanged();
+	}
 }
 
-QTime* BandListItem::starts() {
-	return _starts;
+QTime BandListItem::starts() {
+	return *_starts;
 }
 
-void BandListItem::setstarts(QTime* starts) {
-	if (starts != _starts){
-		_starts = starts;
+void BandListItem::setstarts(QTime starts) {
+	if (starts != *_starts){
+		_starts = &starts;
 		emit startsChanged();
 	}
 }
@@ -79,9 +82,9 @@ void BandListItem::setlasts(quint8& lasts) {
 	}
 }
 
-QTime* BandListItem::ends() {
-	QTime* tmp = _starts;
-	tmp->addMSecs(_lasts);
+QTime BandListItem::ends() {
+	QTime tmp = *_starts;
+	tmp.addMSecs(_lasts);
 	return tmp;
 }
 

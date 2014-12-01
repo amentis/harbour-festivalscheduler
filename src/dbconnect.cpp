@@ -18,9 +18,12 @@ DbConnect::~DbConnect() {
 }
 
 bool DbConnect::openDB() {
-	QQmlEngine engine;
-	QString path(engine.offlineStoragePath());
-	path.append("festivalscheduler.sqlite");
+	QString path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+	QDir dir;
+	path.append("/.local/share/harbour-festivalscheduler/");
+	dir.mkpath(path);
+	path.append("save.db");
+	db = QSqlDatabase::addDatabase("QSQLITE");
 	db.setDatabaseName(path);
 	return db.open();
 }
@@ -57,14 +60,14 @@ void DbConnect::initialize() {
 	emit bandsChanged();
 }
 
-QList<FestivalListItem*> DbConnect::listFests() {
+QList<QObject*> DbConnect::listFests() {
 	return festsCache;
 }
 
 FestivalListItem* DbConnect::getFest(QString uid) {
 	for (int i = 0; i < festsCache.length(); ++i) {
-		if (festsCache.at(i)->uid() == uid)
-			return festsCache.at(i);
+		if (((FestivalListItem*)(festsCache.at(i)))->uid() == uid)
+			return ((FestivalListItem*)festsCache.at(i));
 	}
 	return NULL;
 }
@@ -76,7 +79,7 @@ void DbConnect::setFest(QString uid, QString name, QDate day, quint8 numberOfDay
 	query.exec(QString("INSERT OR REPLACE INTO fests VALUES('%1', '%2'', '%3', '%4', '%5', '%6')")
 					.arg(uid).arg(name).arg(tmp.currentMSecsSinceEpoch()).arg(numberOfDays).arg(place).arg(numberOfScenes));
 	emit festsChanged();
-	setcurrentFest(&uid);
+	setcurrentFest(uid);
 }
 
 void DbConnect::removeFest(QString uid) {
@@ -90,14 +93,14 @@ void DbConnect::removeFest(QString uid) {
 	emit bandsChanged();
 }
 
-QList<BandListItem*> DbConnect::listBands() {
+QList<QObject*> DbConnect::listBands() {
 	return bandsCache;
 }
 
 BandListItem* DbConnect::getBand(QString uid) {
 	for (int i = 0; i < bandsCache.length(); ++i) {
-		if (bandsCache.at(i)->uid() == uid){
-			return bandsCache.at(i);
+		if (((BandListItem*)bandsCache.at(i))->uid() == uid){
+			return ((BandListItem*)bandsCache.at(i));
 		}
 	}
 	return NULL;
@@ -124,13 +127,13 @@ bool DbConnect::empty() {
 	return festsCache.isEmpty();
 }
 
-QString* DbConnect::currentFest() {
-	return _currentFest;
+QString DbConnect::currentFest() {
+	return *_currentFest;
 }
 
-void DbConnect::setcurrentFest(QString* uid) {
+void DbConnect::setcurrentFest(QString uid) {
 	if (uid != _currentFest){
-		_currentFest = uid;
+		_currentFest = &uid;
 		emit currentFestChanged();
 	}
 }
@@ -138,29 +141,29 @@ void DbConnect::setcurrentFest(QString* uid) {
 void DbConnect::autoSelectFest() {
 	if (festsCache.isEmpty())
 		return;
-	QDate* soonestValue = new QDate();
-	soonestValue->setDate(2000, 1, 1);
-	QString* soonestName = new QString();
+	QDate soonestValue;
+	soonestValue.setDate(2000, 1, 1);
+	QString soonestName;
 	for (int i = 0; i < festsCache.length(); ++i) {
-		if (festsCache.at(i)->day() == new QDate(QDate::currentDate())){
-			soonestName = festsCache.at(i)->uid();
+		if (((FestivalListItem*)festsCache.at(i))->day() == QDate::currentDate()){
+			soonestName = ((FestivalListItem*)festsCache.at(i))->uid();
 			break;
 		}
-		if (festsCache.at(i)->day() < soonestValue) {
-			if (soonestValue == 0) {
-				soonestValue = festsCache.at(i)->day();
-				soonestName = festsCache.at(i)->uid();
+		if (((FestivalListItem*)festsCache.at(i))->day() < soonestValue) {
+			if (soonestValue.year() == 2000) {
+				soonestValue = ((FestivalListItem*)festsCache.at(i))->day();
+				soonestName = ((FestivalListItem*)festsCache.at(i))->uid();
 			} else {
-				if (!(soonestValue < new QDate(QDate::currentDate()))){
-					soonestValue = festsCache.at(i)->day();
-					soonestName = festsCache.at(i)->uid();
+				if (!(soonestValue < QDate::currentDate())){
+					soonestValue = ((FestivalListItem*)festsCache.at(i))->day();
+					soonestName = ((FestivalListItem*)festsCache.at(i))->uid();
 				}
 			}
 		}
 	}
 
-	if (soonestValue->year() == 2000){
-		soonestName = festsCache.last()->name();
+	if (soonestValue.year() == 2000){
+		soonestName = ((FestivalListItem*)festsCache.last())->name();
 	}
 
 	setcurrentFest(soonestName);
@@ -186,9 +189,7 @@ void DbConnect::updateFestsCache() {
 void DbConnect::updateBandsCache() {
 	bandsCache.clear();
 	QSqlQuery query;
-	QString festUID;
-	festUID.fromStdString(currentFest()->toStdString());
-	query.exec(QString("SELECT * FROM bands WHERE fest = %1").arg(festUID));
+	query.exec(QString("SELECT * FROM bands WHERE fest = %1").arg(currentFest()));
 	while (query.next()){
 		QTime tmp;
 		tmp = QTime::fromString(query.value("starts").toString(), "hhmmsszzz");

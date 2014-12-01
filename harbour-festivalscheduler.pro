@@ -12,7 +12,7 @@
 # The name of your application
 TARGET = harbour-festivalscheduler
 
-CONFIG += sailfishapp
+CONFIG += sailfishapp sql
 
 SOURCES += src/harbour-festivalscheduler.cpp \
     src/festivallistitem.cpp \

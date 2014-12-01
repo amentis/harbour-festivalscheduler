@@ -30,18 +30,17 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import "pages"
 
 ApplicationWindow
 {
     function getInitialPage() {
         if (dbConnect.empty){
-            return SelectFest
+            return "pages/SelectFest.qml"
         } else {
-            return Home
+            return "pages/Home.qml"
         }
     }
-    initialPage: getInitialPage()
+    initialPage: Qt.resolvedUrl(getInitialPage())
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 }
 

@@ -11,22 +11,33 @@ Dialog {
         cancelText: "Cancel"
     }
 
-    PullDownMenu {
-        MenuItem {
-            text: "Add Festival"
-            onClicked: pageStack.replace("AddFest.qml")
-        }
-    }
-
     SilicaFlickable {
         id : flickable
+        anchors.top: parent.top
+        anchors.fill: parent
+        PullDownMenu {
+            MenuItem {
+                text: "Add Festival"
+                onClicked: pageStack.replace("AddFest.qml", { "isEdit": false })
+            }
+        }
+
         SilicaListView {
             id: festList
             model: dbConnect.listFests()
+            anchors.top: parent.top
+            anchors.fill: parent
+            ViewPlaceholder {
+                enabled: festList.count == 0
+                text: "No festivals added yet"
+            }
+
             delegate: ListItem {
                 id: festItem
-                color: (currentFest === uid)? Theme.highlightColor : Theme.primaryColor
-                Label { text: name }
+                Label {
+                    text: name
+                    color: (currentFest === uid)? Theme.highlightColor : Theme.primaryColor
+                }
                 onClicked: {
                     currentFest = uid
                 }

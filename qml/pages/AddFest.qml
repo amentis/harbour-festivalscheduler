@@ -4,7 +4,7 @@ import com.ivanbratoev.festivalsheduler 1.0
 
 Dialog {
     function isValid() {
-        if (name.text !== "" && numberOfDays.text !== "" && place.text !== "" && numberOfScenes.text !== "" && (1*numberOfDays.text) > 0 && (1*numberOfScenes.text) > 0){
+        if (name.text !== "" && day.text !== "Choose Date" && numberOfDays.text !== "1" && place.text !== "" && numberOfScenes.text !== 1 && (1*numberOfDays.text) > 0 && (1*numberOfScenes.text) > 0){
             return true
         } else {
             return false
@@ -18,36 +18,86 @@ Dialog {
     DialogHeader {
         acceptText: "Save"
         cancelText: "Cancel"
+
     }
-    Column {
-        id: forms
-        TextField {
-            id: name
-            placeholderText: "Festival name"
-            text: isEdit? dbConnect.getFest(dbConnect.currentFest).name : ""
-        }
-        DatePicker {
-            id: day
-            date: isEdit? dbConnect.getFest(dbConnect.currentFest).day : ""
-        }
-        TextField {
-            id: numberOfDays
-            text: isEdit? dbConnect.getFest(dbConnect.currentFest).numberOfDays : 1
-            placeholderText: "Number of Days"
-            validator: RegExpValidator { regExp: /^[0-9]$/ }
-            color: errorHighlight? "red" : Theme.primaryColor
-        }
-        TextField {
-            id: place
-            placeholderText: "Place"
-            text: isEdit? dbConnect.getFest(dbConnect.currentFest).place : ""
-        }
-        TextField {
-            id: numberOfScenes
-            text: isEdit? dbConnect.getFest(dbConnect.currentFest).numberOfScenes : 1
-            placeholderText: "Number of Scenes"
-            validator: RegExpValidator { regExp: /^[0-9]$/ }
-            color: errorHighlight? "red" : Theme.primaryColor
+    SilicaFlickable {
+        Column {
+            id: forms
+            anchors {
+                top: parent.top
+                margins: 5 * Theme.paddingLarge
+            }
+            width: addFest.width
+            spacing: Theme.paddingMedium
+            TextField {
+                width: parent.width
+                id: name
+                x: Theme.paddingMedium
+                placeholderText: "Festival name"
+                label: "Festival name"
+                text: isEdit? dbConnect.getFest(dbConnect.currentFest).name : ""
+                EnterKey.enabled: text.length > 0
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: focus = false
+            }
+            Button {
+                id: day
+                width: parent.width - 5
+                x: Theme.paddingMedium
+                property date date
+                text: "Choose Date"
+                onClicked: {
+                    var datePicker = pageStack.push(pickerDialog)
+                    datePicker.accepted.connect(function() {
+                        date = pickerDialog.date
+                        text = pickerDialog.dateText
+                        flick.scrollToBottom()
+                    })
+                }
+                DatePickerDialog {
+                    id: pickerDialog
+                }
+            }
+
+            TextField {
+                id: numberOfDays
+                width: parent.width
+                x: Theme.paddingMedium
+                text: isEdit? dbConnect.getFest(dbConnect.currentFest).numberOfDays : 1
+                placeholderText: "Number of Days"
+                label: "Number of Days"
+                validator: IntValidator { bottom: 1; top: 10 }
+                color: errorHighlight? "red" : Theme.primaryColor
+                inputMethodHints: Qt.ImhNoPredictiveText
+                EnterKey.enabled: text.length > 0
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: place.focus = true
+            }
+            TextField {
+                id: place
+                width: parent.width
+                x: Theme.paddingMedium
+                placeholderText: "Place"
+                label: "Place"
+                text: isEdit? dbConnect.getFest(dbConnect.currentFest).place : ""
+                EnterKey.enabled: text.length > 0
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: numberOfScenes.focus = true
+            }
+            TextField {
+                id: numberOfScenes
+                width: parent.width
+                x: Theme.paddingMedium
+                text: isEdit? dbConnect.getFest(dbConnect.currentFest).numberOfScenes : 1
+                placeholderText: "Number of Scenes"
+                label: "Number of Scenes"
+                validator: IntValidator { bottom: 1; top: 10 }
+                color: errorHighlight? "red" : Theme.primaryColor
+                inputMethodHints: Qt.ImhNoPredictiveText
+                EnterKey.enabled: text.length > 0
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: focus = false
+            }
         }
     }
     onDone: if (result === DialogResult.Accepted) {
