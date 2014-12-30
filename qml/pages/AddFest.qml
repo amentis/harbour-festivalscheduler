@@ -4,7 +4,8 @@ import com.ivanbratoev.festivalsheduler 1.0
 
 Dialog {
     function isValid() {
-        if (name.text !== "" && day.text !== "Choose Date" && numberOfDays.text !== "1" && place.text !== "" && numberOfScenes.text !== 1 && (1*numberOfDays.text) > 0 && (1*numberOfScenes.text) > 0){
+        if (name.text !== "" && day.text !== "Choose Date" && place.text !== ""
+                && (1*numberOfDays.text) > 0 && (1*numberOfScenes.text) > 0){
             return true
         } else {
             return false
@@ -21,6 +22,7 @@ Dialog {
 
     }
     SilicaFlickable {
+        id: flick
         Column {
             id: forms
             anchors {
@@ -88,12 +90,12 @@ Dialog {
                 id: numberOfScenes
                 width: parent.width
                 x: Theme.paddingMedium
-                text: isEdit? dbConnect.getFest(dbConnect.currentFest).numberOfScenes : 1
+                text: isEdit? dbConnect.getFest(dbConnect.currentFest).numberOfScenes : ""
                 placeholderText: "Number of Scenes"
                 label: "Number of Scenes"
                 validator: IntValidator { bottom: 1; top: 10 }
                 color: errorHighlight? "red" : Theme.primaryColor
-                inputMethodHints: Qt.ImhNoPredictiveText
+                inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhDigitsOnly
                 EnterKey.enabled: text.length > 0
                 EnterKey.iconSource: "image://theme/icon-m-enter-next"
                 EnterKey.onClicked: focus = false
@@ -101,6 +103,6 @@ Dialog {
         }
     }
     onDone: if (result === DialogResult.Accepted) {
-                dbConnect.setFest(dbConnect.currentFest, name.text, day.date, 1*numberOfDays.text, place.text, 1*numberOfScenes.text)
+                dbConnect.setFest((isEdit)? dbConnect.currentFest : dbConnect.getUniqueId(), name.text, day.date, 1*numberOfDays.text, place.text, 1*numberOfScenes.text)
             }
 }
